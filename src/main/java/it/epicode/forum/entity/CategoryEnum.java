@@ -1,6 +1,6 @@
 package it.epicode.forum.entity;
 
-public enum Category {
+public enum CategoryEnum {
     HARDWARE,
     CODING,
     VIDEOGAME,

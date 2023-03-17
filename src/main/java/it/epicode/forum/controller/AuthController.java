@@ -2,6 +2,7 @@ package it.epicode.forum.controller;
 
 import it.epicode.forum.config.JwtUtils;
 import it.epicode.forum.config.UserDetailsImpl;
+import it.epicode.forum.entity.Post;
 import it.epicode.forum.entity.Role;
 import it.epicode.forum.entity.User;
 import it.epicode.forum.login.LoginRequest;
@@ -81,9 +82,9 @@ public class AuthController {
         return ur.findAll();
     }
 
-    @GetMapping("/user2")
-    public List<User> getAllUsers2() {
-        return ur.findAll();
+    @GetMapping("/lastUser")
+    public Optional<List<User>> getLastUser() {
+        return ur.findLastUser();
     }
 
     @GetMapping("/profile")

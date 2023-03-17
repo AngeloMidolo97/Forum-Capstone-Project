@@ -1,5 +1,6 @@
 package it.epicode.forum.entity;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,8 +9,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
+/*@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")*/
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -38,6 +43,16 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roleList;
+
+    /*@ManyToMany(cascade = CascadeType.REMOVE)
+    @JoinTable(
+            name = "user_likes",
+            joinColumns = @JoinColumn(name = "user_id_like"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    //@JsonBackReference
+    @JsonIgnore
+    private List<Post> likes;*/
 
 
 }

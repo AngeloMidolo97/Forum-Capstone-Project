@@ -52,22 +52,28 @@ public class PostController {
     }
 
     @PostMapping("/post/risposta")
-    public ResponseEntity<?> rispostaPost(@RequestBody RispostaPost post, @RequestParam int id) {
+    public ResponseEntity<?> rispostaPost(@RequestBody RispostaPost rispostaPost, @RequestParam int id) {
 
         //GET LOGGED USER
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
-        post.setDataPubb(LocalDate.now());
+        Post p = pr.findById(id).get();
+
+        List<RispostaPost> risposte = p.getRisposte();
+
+        rispostaPost.setDataPubb(LocalDate.now());
 
         //SET THE LOGGED USER AS THE CREATOR OF THE POST
-        post.setUser(ur.findByUsername(currentPrincipalName));
+        rispostaPost.setUser(ur.findByUsername(currentPrincipalName));
 
-        post.setPost(pr.findById(id).get());
+        //rispostaPost.setPost(pr.findById(id).get());
 
-        RispostaPost p = rp.save(post);
+        risposte.add(rispostaPost);
 
-        return new ResponseEntity<>(post, HttpStatus.CREATED);
+        RispostaPost r = rp.save(rispostaPost);
+
+        return new ResponseEntity<>(rispostaPost, HttpStatus.CREATED);
     }
 
     @PutMapping("/profile/{id}")
@@ -83,8 +89,17 @@ public class PostController {
 
         User u = ur.findById(id).get();
 
-        u.setBio(user.getBio());
-        u.setImgUrl(user.getImgUrl());
+        if(user.getBio() == "" | user.getBio() == null) {
+            u.setBio(u.getBio());
+        } else {
+            u.setBio(user.getBio());
+        }
+
+        if(user.getImgUrl() == "" | user.getImgUrl() == null) {
+            u.setImgUrl(u.getImgUrl());
+        } else {
+            u.setImgUrl(user.getImgUrl());
+        }
 
         ur.save(u);
 
@@ -94,14 +109,68 @@ public class PostController {
     @PutMapping("/like/{id}")
     public ResponseEntity<Post> like(@PathVariable int id, @RequestBody Post post) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User u = ur.findByUsername(currentPrincipalName);
+
         Post p = pr.findById(id).get();
 
-        p.setMiPiace(p.getMiPiace() + 1);
+        List<User> likes = p.getLikes();
+
+
+
+        if (p.getLikes().contains(ur.findByUsername(currentPrincipalName))) {
+            p.setMiPiace(p.getMiPiace() - 1);
+            likes.remove(
+                    ur.findByUsername(currentPrincipalName)
+            );
+        } else {
+            likes.add(
+                    ur.findByUsername(currentPrincipalName)
+            );
+
+            p.setMiPiace(p.getMiPiace() + 1);
+        }
+
+        p.setLikes(likes);
 
         pr.save(p);
 
         return new ResponseEntity<>(p, HttpStatus.CREATED);
     }
+
+    /*@PutMapping("/like/{id}")
+    public ResponseEntity<User> like(@PathVariable int id, @RequestBody User user) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User u = ur.findByUsername(currentPrincipalName);
+
+        List<Post> likes = u.getLikes();
+
+        Post p = pr.findById(id).get();
+
+        if (u.getLikes().contains(pr.findById(id).get())) {
+            p.setMiPiace(p.getMiPiace() - 1);
+            likes.remove(
+                    pr.findById(id).get()
+            );
+        } else {
+            likes.add(
+                    pr.findById(id).get()
+            );
+
+            p.setMiPiace(p.getMiPiace() + 1);
+        }
+
+        u.setLikes(likes);
+
+        ur.save(u);
+
+        return new ResponseEntity<>(u, HttpStatus.CREATED);
+    }*/
 
     @DeleteMapping("/post/{id}")
     public ResponseEntity<?> deletePost(@PathVariable int id) {
@@ -111,7 +180,7 @@ public class PostController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
-        if(p.get().getUser().getUsername().equals(currentPrincipalName)) {
+        if (p.get().getUser().getUsername().equals(currentPrincipalName)) {
             pr.deleteById(id);
         }
 
@@ -125,7 +194,12 @@ public class PostController {
 
     @GetMapping("/post")
     public List<Post> getAllPost() {
-        return pr.findAll();
+        return pr.findAllByIdDesc();
+    }
+
+    @GetMapping("/post/top3")
+    public Optional<List<Post>> getTop3() {
+        return pr.findTop3();
     }
 
     @GetMapping("/mypost")

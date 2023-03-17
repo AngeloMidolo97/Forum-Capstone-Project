@@ -32,11 +32,6 @@ public class RispostaPost {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    //TODO AGGIUNTA POST
-    @ManyToOne
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private Post post;
-
     @Column(name = "mi_piace")
     private int miPiace;
 

@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface PostRepo extends JpaRepository<Post, Integer> {
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM posts AS p WHERE p.user_id = :p"
+            value = "SELECT * FROM posts AS p WHERE p.id_user_ = :p ORDER BY p.data_pubb DESC"
     )
     public Optional<List<Post>> getPostByUser(@Param("p") int id);
 
@@ -29,5 +29,17 @@ public interface PostRepo extends JpaRepository<Post, Integer> {
             value = "SELECT * FROM posts WHERE posts.categoria = :c"
     )
     Optional<List<Post>> findAllByCategoria(@Param("c") String categoria);
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM posts ORDER BY posts.mi_piace DESC LIMIT 3"
+    )
+    Optional<List<Post>> findTop3();
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM posts ORDER BY posts.data_pubb DESC"
+    )
+    List<Post> findAllByIdDesc();
 
 }

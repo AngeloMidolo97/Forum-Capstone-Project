@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,9 +59,11 @@ public class ForumApplication implements CommandLineRunner {
 
 	private User initUser(List<Role> roles) {
 		User user = new User();
-		user.setFullname("Mario Rossi");
-		user.setUsername("mrossi");
+		user.setFullname("Angelo Midolo");
+		user.setUsername("angelom97");
 		user.setPassword(pe.encode("test"));
+		user.setDataRegistrazione(LocalDate.now());
+		user.setEmail("angelo@angelo.com");
 		user.setRoleList(roles);
 		user.setActive(true);
 		ur.save(user);

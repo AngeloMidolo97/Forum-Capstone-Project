@@ -8,6 +8,8 @@ import it.epicode.forum.repo.RispostaPostRepo;
 import it.epicode.forum.repo.UserRepo;
 import it.epicode.forum.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,6 +36,7 @@ public class PostController {
     @Autowired
     RispostaPostRepo rp;
 
+    //AGGIUNGE POST
     @PostMapping("/post")
     public ResponseEntity<?> createPost(@RequestBody Post post) {
 
@@ -51,6 +54,7 @@ public class PostController {
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
+    //RISPOSTA AL POST
     @PostMapping("/post/risposta")
     public ResponseEntity<?> rispostaPost(@RequestBody RispostaPost rispostaPost, @RequestParam int id) {
 
@@ -76,6 +80,7 @@ public class PostController {
         return new ResponseEntity<>(rispostaPost, HttpStatus.CREATED);
     }
 
+    //MODIFICA PROFILO
     @PutMapping("/profile/{id}")
     public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User user) {
 
@@ -106,6 +111,7 @@ public class PostController {
         return new ResponseEntity<>(u, HttpStatus.CREATED);
     }
 
+    //LIKE AL POST
     @PutMapping("/like/{id}")
     public ResponseEntity<Post> like(@PathVariable int id, @RequestBody Post post) {
 
@@ -140,38 +146,7 @@ public class PostController {
         return new ResponseEntity<>(p, HttpStatus.CREATED);
     }
 
-    /*@PutMapping("/like/{id}")
-    public ResponseEntity<User> like(@PathVariable int id, @RequestBody User user) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-
-        User u = ur.findByUsername(currentPrincipalName);
-
-        List<Post> likes = u.getLikes();
-
-        Post p = pr.findById(id).get();
-
-        if (u.getLikes().contains(pr.findById(id).get())) {
-            p.setMiPiace(p.getMiPiace() - 1);
-            likes.remove(
-                    pr.findById(id).get()
-            );
-        } else {
-            likes.add(
-                    pr.findById(id).get()
-            );
-
-            p.setMiPiace(p.getMiPiace() + 1);
-        }
-
-        u.setLikes(likes);
-
-        ur.save(u);
-
-        return new ResponseEntity<>(u, HttpStatus.CREATED);
-    }*/
-
+    //CANCELLA POST
     @DeleteMapping("/post/{id}")
     public ResponseEntity<?> deletePost(@PathVariable int id) {
         Optional<Post> p = pr.findById(id);
@@ -193,8 +168,8 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    public List<Post> getAllPost() {
-        return pr.findAllByIdDesc();
+    public Page<Post> getAllPost(Pageable pageable, @RequestParam int page, @RequestParam int size) {
+        return pr.findAllByIdDesc(pageable);
     }
 
     @GetMapping("/post/top3")

@@ -12,6 +12,7 @@ import it.epicode.forum.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,10 +64,10 @@ public class AuthController {
     @PostMapping("/auth/signup")
     public ResponseEntity<User> signUp(@RequestBody User user) {
         List<Role> roles = new ArrayList<>();
-        Role role = new Role();
-        role.setName("ROLE_USER");
-        rp.save(role);
-        roles.add(role);
+        //Role role = new Role();
+        //role.setName("ROLE_USER");
+        //rp.save(role);
+        roles.add(rp.findById(2).get());
         
         user.setRoleList(roles);
         user.setActive(true);
@@ -77,7 +78,36 @@ public class AuthController {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
+    //BAN USER
+    @PutMapping("/ban/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> banUser(@RequestBody User user, @PathVariable int id) {
+
+        User u = ur.findById(id).get();
+
+        u.setActive(false);
+
+        ur.save(u);
+
+        return new ResponseEntity<>(u, HttpStatus.CREATED);
+    }
+
+    //UNBAN USER
+    @PutMapping("/unban/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> unBanUser(@RequestBody User user, @PathVariable int id) {
+
+        User u = ur.findById(id).get();
+
+        u.setActive(true);
+
+        ur.save(u);
+
+        return new ResponseEntity<>(u, HttpStatus.CREATED);
+    }
+
     @GetMapping("/user")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<User> getAllUsers() {
         return ur.findAll();
     }

@@ -1,11 +1,13 @@
 package it.epicode.forum.controller;
 
+import it.epicode.forum.entity.NotificationPost;
 import it.epicode.forum.entity.Post;
 import it.epicode.forum.entity.RispostaPost;
 import it.epicode.forum.entity.User;
 import it.epicode.forum.repo.PostRepo;
 import it.epicode.forum.repo.RispostaPostRepo;
 import it.epicode.forum.repo.UserRepo;
+import it.epicode.forum.service.NotificationPostService;
 import it.epicode.forum.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,6 +37,9 @@ public class PostController {
 
     @Autowired
     RispostaPostRepo rp;
+
+    @Autowired
+    NotificationPostService nps;
 
     //AGGIUNGE POST
     @PostMapping("/post")
@@ -76,6 +81,13 @@ public class PostController {
         risposte.add(rispostaPost);
 
         RispostaPost r = rp.save(rispostaPost);
+
+        NotificationPost n = new NotificationPost();
+        n.setRecipient(p.getUser());
+        n.setTitle(ur.findByUsername(currentPrincipalName).getUsername() + " ha risposto al tuo post");
+        n.setPost(p);
+
+        nps.saveNotification(n);
 
         return new ResponseEntity<>(rispostaPost, HttpStatus.CREATED);
     }
@@ -170,6 +182,16 @@ public class PostController {
     @GetMapping("/post")
     public Page<Post> getAllPost(Pageable pageable, @RequestParam int page, @RequestParam int size) {
         return pr.findAllByIdDesc(pageable);
+    }
+
+    @GetMapping("/post/title")
+    public Page<Post> getAllPostByTitle(Pageable pageable, @RequestParam int page, @RequestParam int size) {
+        return pr.findAllByTitle(pageable);
+    }
+
+    @GetMapping("/post/categoria")
+    public Page<Post> getAllPostByCategoria(Pageable pageable, @RequestParam int page, @RequestParam int size) {
+        return pr.findAllByCategoriaASC(pageable);
     }
 
     @GetMapping("/post/top3")

@@ -44,4 +44,16 @@ public interface PostRepo extends JpaRepository<Post, Integer> {
     )
     Page<Post> findAllByIdDesc(Pageable pageable);
 
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM posts ORDER BY posts.title"
+    )
+    Page<Post> findAllByTitle(Pageable pageable);
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM posts ORDER BY categoria ASC"
+    )
+    Page<Post> findAllByCategoriaASC(Pageable pageable);
+
 }

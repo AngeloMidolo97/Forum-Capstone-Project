@@ -52,23 +52,28 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        String jwt = jwtUtils.generateJwtToken(auth);
-
         UserDetailsImpl user = (UserDetailsImpl) auth.getPrincipal();
 
-        List<String> roles = user.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+        User u = ur.findByUsername(((UserDetailsImpl) auth.getPrincipal()).getUsername());
 
-        return ResponseEntity.ok(new LoginResponse(jwt,user.getUsername(), roles, user.getExpirationTime()));
+        //VERIFICA CHE L'USER SIA ATTIVO
+        if (u.isActive()) {
+            String jwt = jwtUtils.generateJwtToken(auth);
+
+            List<String> roles = user.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
+
+            return ResponseEntity.ok(new LoginResponse(jwt, user.getUsername(), roles, user.getExpirationTime()));
+        } else {
+            return (ResponseEntity<?>) ResponseEntity.badRequest();
+        }
+
     }
 
     @PostMapping("/auth/signup")
     public ResponseEntity<User> signUp(@RequestBody User user) {
         List<Role> roles = new ArrayList<>();
-        //Role role = new Role();
-        //role.setName("ROLE_USER");
-        //rp.save(role);
         roles.add(rp.findById(2).get());
-        
+
         user.setRoleList(roles);
         user.setActive(true);
         user.setDataRegistrazione(LocalDate.now());
@@ -85,21 +90,11 @@ public class AuthController {
 
         User u = ur.findById(id).get();
 
-        u.setActive(false);
-
-        ur.save(u);
-
-        return new ResponseEntity<>(u, HttpStatus.CREATED);
-    }
-
-    //UNBAN USER
-    @PutMapping("/unban/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> unBanUser(@RequestBody User user, @PathVariable int id) {
-
-        User u = ur.findById(id).get();
-
-        u.setActive(true);
+        if (u.isActive()) {
+            u.setActive(false);
+        } else {
+            u.setActive(true);
+        }
 
         ur.save(u);
 
@@ -107,8 +102,13 @@ public class AuthController {
     }
 
     @GetMapping("/user")
-    @PreAuthorize("hasRole('ADMIN')")
     public List<User> getAllUsers() {
+        return ur.findAll();
+    }
+
+    @GetMapping("/dashboard")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<User> getAllUsersD() {
         return ur.findAll();
     }
 

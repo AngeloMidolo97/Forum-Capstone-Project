@@ -44,15 +44,5 @@ public class User {
     )
     private List<Role> roleList;
 
-    /*@ManyToMany(cascade = CascadeType.REMOVE)
-    @JoinTable(
-            name = "user_likes",
-            joinColumns = @JoinColumn(name = "user_id_like"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
-    )
-    //@JsonBackReference
-    @JsonIgnore
-    private List<Post> likes;*/
-
 
 }

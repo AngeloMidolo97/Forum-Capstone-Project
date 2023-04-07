@@ -35,7 +35,6 @@ public class ForumApplication implements CommandLineRunner {
 
 			//List<Role> roles = initRole();
 			//initUser(roles);
-		//initCategory();
 	}
 
 

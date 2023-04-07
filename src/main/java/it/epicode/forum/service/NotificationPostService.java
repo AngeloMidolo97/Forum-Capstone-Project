@@ -1,9 +1,7 @@
 package it.epicode.forum.service;
 
-import it.epicode.forum.entity.Notification;
 import it.epicode.forum.entity.NotificationPost;
 import it.epicode.forum.repo.NotificationPostRepo;
-import it.epicode.forum.repo.NotificationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +17,10 @@ public class NotificationPostService {
     public List<NotificationPost> findUnread(int id){
         return npr.findUnreadNotifications(id);
     }
+
+    /* public void deleteNotification(int id){
+        npr.deleteAllByPost(id);
+    }*/
 
     public Optional<NotificationPost> findById(int id){
         return npr.findById(id);

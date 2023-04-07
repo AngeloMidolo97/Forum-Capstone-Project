@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,12 +83,12 @@ public class PostController {
 
         RispostaPost r = rp.save(rispostaPost);
 
-        NotificationPost n = new NotificationPost();
+        /*NotificationPost n = new NotificationPost();
         n.setRecipient(p.getUser());
-        n.setTitle(ur.findByUsername(currentPrincipalName).getUsername() + " ha risposto al tuo post");
+        n.setTitle(r.getUser().getUsername() + " ha risposto al tuo post");
         n.setPost(p);
-
         nps.saveNotification(n);
+        */
 
         return new ResponseEntity<>(rispostaPost, HttpStatus.CREATED);
     }
@@ -169,6 +170,7 @@ public class PostController {
 
         if (p.get().getUser().getUsername().equals(currentPrincipalName)) {
             pr.deleteById(id);
+
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

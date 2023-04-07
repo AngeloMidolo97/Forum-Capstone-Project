@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -43,16 +45,22 @@ public class Post {
     private User user;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private List<RispostaPost> risposte;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany (fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(
             name = "user_likes",
             joinColumns = @JoinColumn(name = "post_id_like"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> likes;
+
+    /*@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="post_id", referencedColumnName = "id")
+    private NotificationPost notifica;*/
 
 
 

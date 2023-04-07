@@ -15,4 +15,9 @@ public interface NotificationPostRepo extends JpaRepository<NotificationPost, In
             nativeQuery = true,
             value = "SELECT * FROM notifications_post WHERE notifications_post.read = false AND notifications_post.user_id = :c")
     List<NotificationPost> findUnreadNotifications(@Param("c") int id);
+
+    /*@Query(
+            nativeQuery = true,
+            value = "DELETE FROM notifications_post WHERE notifications_post.post_id = :c")
+    void deleteAllByPost(@Param("c") int id);*/
 }
